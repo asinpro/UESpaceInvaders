@@ -10,6 +10,10 @@ UCLASS()
 class UESPACEINVADERS_API AEnemy : public AActor
 {
 	GENERATED_BODY()
+
+	/* The mesh component */
+	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* EnemyMeshComponent;
 	
 public:	
 	// Sets default values for this actor's properties

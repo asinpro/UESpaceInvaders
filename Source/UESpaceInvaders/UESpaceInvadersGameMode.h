@@ -13,6 +13,8 @@ class AUESpaceInvadersGameMode : public AGameModeBase
 
 public:
 	AUESpaceInvadersGameMode();
+
+	void StartPlay() override;
 };
 
 

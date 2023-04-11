@@ -6,9 +6,11 @@
 // Sets default values
 AEnemy::AEnemy()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> EnemyMesh(TEXT("/Game/Geometry/Meshes/1M_Cube_Chamfer.1M_Cube_Chamfer"));
+	EnemyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyMesh"));
+	RootComponent = EnemyMeshComponent;
+	//EnemyMeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	EnemyMeshComponent->SetStaticMesh(EnemyMesh.Object);
 }
 
 // Called when the game starts or when spawned
