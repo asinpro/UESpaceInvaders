@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TeamInterface.h"
 #include "UESpaceInvadersProjectile.generated.h"
 
 class UProjectileMovementComponent;
 class UStaticMeshComponent;
 
 UCLASS(config=Game)
-class AUESpaceInvadersProjectile : public AActor
+class AUESpaceInvadersProjectile : public AActor, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -26,12 +27,19 @@ public:
 	AUESpaceInvadersProjectile();
 
 	/** Function to handle the projectile hitting something */
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	/** Returns ProjectileMesh subobject **/
 	FORCEINLINE UStaticMeshComponent* GetProjectileMesh() const { return ProjectileMesh; }
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	uint8 GetTeam() const override;
+	void SetTeam(uint8 Team);
+
+private:
+	static bool OnEnemyTeam(const AActor* ActorA, const AActor* ActorB);
+
+	uint8 TeamType;
 };
 

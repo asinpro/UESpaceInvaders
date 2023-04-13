@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
+#include "TeamInterface.h"
 #include "Enemy.generated.h"
 
-UCLASS()
-class UESPACEINVADERS_API AEnemy : public AActor
+UCLASS(Blueprintable)
+class UESPACEINVADERS_API AEnemy : public APawn, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -26,5 +27,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+ 
+	uint8 GetTeam() const override;
 };

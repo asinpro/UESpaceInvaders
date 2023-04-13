@@ -12,6 +12,8 @@
 #include "Engine/StaticMesh.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
+#include "UESpaceInvadersTypes.h"
+#include "UESpaceInvadersGameMode.h"
 
 const FName AUESpaceInvadersPawn::MoveRightBinding("MoveRight");
 const FName AUESpaceInvadersPawn::FireBinding("Fire");
@@ -27,10 +29,12 @@ AUESpaceInvadersPawn::AUESpaceInvadersPawn()
 	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("/Game/TwinStick/Audio/TwinStickFire.TwinStickFire"));
 	FireSound = FireAudio.Object;
 
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
 	MoveSpeed = 1000.0f;
 	GunOffset = FVector(90.f, 0.f, 0.f);
 	FireRate = 0.1f;
-	bCanFire = true;
+	bCanFire = false;
 }
 
 void AUESpaceInvadersPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -50,7 +54,14 @@ void AUESpaceInvadersPawn::Tick(float DeltaSeconds)
 
 	if (Movement.SizeSquared() > 0.0f)
 	{
-		RootComponent->MoveComponent(Movement, FRotator::ZeroRotator, false);
+		UWorld* const World = GetWorld();
+		if (World != nullptr) {
+			auto* Mode = World->GetAuthGameMode<AUESpaceInvadersGameMode>();
+			FVector NewLocation = GetActorLocation() + Movement;
+			if (NewLocation.Y > Mode->WorldBounds.Min.Y && NewLocation.Y < Mode->WorldBounds.Max.Y) {
+				RootComponent->MoveComponent(Movement, FRotator::ZeroRotator, false);
+			}
+		}
 	}
 
 	if (bCanFire == true)
@@ -60,7 +71,8 @@ void AUESpaceInvadersPawn::Tick(float DeltaSeconds)
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
 		{
-			World->SpawnActor<AUESpaceInvadersProjectile>(SpawnLocation, FRotator::ZeroRotator);
+			auto* Projectile = World->SpawnActor<AUESpaceInvadersProjectile>(SpawnLocation, FRotator::ZeroRotator);
+			Projectile->SetTeam(ETeam::Player);
 		}
 
 		bCanFire = false;
@@ -86,5 +98,10 @@ void AUESpaceInvadersPawn::FireStopped()
 void AUESpaceInvadersPawn::ShotTimerExpired()
 {
 	bCanFire = bFireStarted;
+}
+
+uint8 AUESpaceInvadersPawn::GetTeam() const
+{
+	return ETeam::Player;
 }
 

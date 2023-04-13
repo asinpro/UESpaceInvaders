@@ -15,7 +15,13 @@ public:
 	AUESpaceInvadersGameMode();
 
 	void StartPlay() override;
+
+	UPROPERTY(EditAnywhere)
+	FBox WorldBounds;
+
+private:
+	void UpdateWorldBounds();
+
+	TArray<class AEnemy*> AllEnemies;
 };
-
-
 

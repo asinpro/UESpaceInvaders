@@ -1,11 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserve
 
 #include "UESpaceInvadersProjectile.h"
+#include "UESpaceInvaders.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/StaticMesh.h"
+#include "UESpaceInvadersTypes.h"
 
 AUESpaceInvadersProjectile::AUESpaceInvadersProjectile() 
 {
@@ -16,8 +18,12 @@ AUESpaceInvadersProjectile::AUESpaceInvadersProjectile()
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh0"));
 	ProjectileMesh->SetStaticMesh(ProjectileMeshAsset.Object);
 	ProjectileMesh->SetupAttachment(RootComponent);
-	ProjectileMesh->BodyInstance.SetCollisionProfileName("Projectile");
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AUESpaceInvadersProjectile::OnHit);		// set up a notification for when this component hits something
+	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMesh->SetCollisionObjectType(COLLISION_PROJECTILE);
+	ProjectileMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	RootComponent = ProjectileMesh;
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
@@ -33,13 +39,51 @@ AUESpaceInvadersProjectile::AUESpaceInvadersProjectile()
 	InitialLifeSpan = 3.0f;
 }
 
-void AUESpaceInvadersProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
-	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 20.0f, GetActorLocation());
-	}
+uint8 AUESpaceInvadersProjectile::GetTeam() const {
+	return TeamType;
+}
 
-	Destroy();
+void AUESpaceInvadersProjectile::SetTeam(uint8 Team)
+{
+	TeamType = Team;
+}
+
+void AUESpaceInvadersProjectile::NotifyActorBeginOverlap(class AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	UE_LOG(LogUESpaceInvaders, Warning, TEXT("Begin overlap"));
+
+	//if (!bInitialized)
+	//{
+	//	return;
+	//}
+
+	//if (HitActors.Find(OtherActor) != INDEX_NONE)
+	//{
+	//	return;
+	//}
+	//HitActors.AddUnique(OtherActor);
+
+	//const AStrategyChar* HitChar = Cast<AStrategyChar>(OtherActor);
+	if (OnEnemyTeam(this, OtherActor))
+	{
+		UE_LOG(LogUESpaceInvaders, Warning, TEXT("Hit enemy"));
+	//	FHitResult PawnHit;
+	//	PawnHit.Actor = MakeWeakObjectPtr(const_cast<AStrategyChar*>(HitChar));
+	//	PawnHit.Component = HitChar->GetCapsuleComponent();
+	//	PawnHit.bBlockingHit = true;
+	//	PawnHit.Location = PawnHit.ImpactPoint = GetActorLocation();
+	//	PawnHit.Normal = PawnHit.ImpactNormal = -MovementComp->Velocity.GetSafeNormal();
+
+	//	OnHit(PawnHit);
+	}
+}
+
+bool AUESpaceInvadersProjectile::OnEnemyTeam(const AActor* ActorA, const AActor* ActorB)
+{
+	const ITeamInterface* TeamA = Cast<const ITeamInterface>(ActorA);
+	const ITeamInterface* TeamB = Cast<const ITeamInterface>(ActorB);
+
+	return (TeamA != nullptr) && (TeamB != nullptr) && (TeamA->GetTeam() != TeamB->GetTeam());
 }
