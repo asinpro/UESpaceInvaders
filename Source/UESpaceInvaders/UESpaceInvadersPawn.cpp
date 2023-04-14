@@ -56,11 +56,14 @@ void AUESpaceInvadersPawn::Tick(float DeltaSeconds)
 	{
 		UWorld* const World = GetWorld();
 		if (World != nullptr) {
+			RootComponent->MoveComponent(Movement, FRotator::ZeroRotator, false);
+
 			auto* Mode = World->GetAuthGameMode<AUESpaceInvadersGameMode>();
-			FVector NewLocation = GetActorLocation() + Movement;
-			if (NewLocation.Y > Mode->WorldBounds.Min.Y && NewLocation.Y < Mode->WorldBounds.Max.Y) {
-				RootComponent->MoveComponent(Movement, FRotator::ZeroRotator, false);
-			}
+			FBox BoundBox = RootComponent->GetLocalBounds().GetBox();
+			
+			FBox WorldBounds = Mode->WorldBounds.ExpandBy(-FVector::YAxisVector * BoundBox.GetExtent().Y);
+			FVector ClampedLocation = WorldBounds.GetClosestPointTo(GetActorLocation());
+			SetActorLocation(ClampedLocation);
 		}
 	}
 

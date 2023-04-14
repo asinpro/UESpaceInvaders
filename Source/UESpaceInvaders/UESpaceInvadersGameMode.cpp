@@ -42,8 +42,6 @@ void AUESpaceInvadersGameMode::UpdateWorldBounds()
 		TArray<FVector> Points;
 		FVector const CamLocation = PController->GetViewTarget()->GetActorLocation();
 		float DistanceFromGround = CamLocation.Z - PlayerLocation.Z;
-		UE_LOG(LogUESpaceInvaders, Warning, TEXT("Camera location %s"), *CamLocation.ToString());
-		UE_LOG(LogUESpaceInvaders, Warning, TEXT("Distance from ground %f"), DistanceFromGround);
 		float Alpha = FMath::DegreesToRadians(PController->PlayerCameraManager->GetFOVAngle() / 2);
 		float MaxVisibleDistance = (DistanceFromGround / FMath::Cos(Alpha)) * FMath::Sin(Alpha);
 
