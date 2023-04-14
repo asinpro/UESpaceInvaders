@@ -15,6 +15,7 @@ AEnemy::AEnemy()
 	EnemyMeshComponent->SetStaticMesh(EnemyMesh.Object);
 	
 	AIControllerClass = AEnemyAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::Spawned;
 }
 
 // Called when the game starts or when spawned

@@ -26,6 +26,8 @@ class AUESpaceInvadersProjectile : public AActor, public ITeamInterface
 public:
 	AUESpaceInvadersProjectile();
 
+	void InitProjectile(const FVector& Direction, uint8 Team);
+
 	/** Function to handle the projectile hitting something */
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
@@ -35,7 +37,6 @@ public:
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
 	uint8 GetTeam() const override;
-	void SetTeam(uint8 Team);
 
 private:
 	static bool OnEnemyTeam(const AActor* ActorA, const AActor* ActorB);

@@ -75,7 +75,7 @@ void AUESpaceInvadersPawn::Tick(float DeltaSeconds)
 		if (World != nullptr)
 		{
 			auto* Projectile = World->SpawnActor<AUESpaceInvadersProjectile>(SpawnLocation, FRotator::ZeroRotator);
-			Projectile->SetTeam(ETeam::Player);
+			Projectile->InitProjectile(FVector::XAxisVector, ETeam::Player);
 		}
 
 		bCanFire = false;

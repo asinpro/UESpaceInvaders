@@ -39,20 +39,22 @@ AUESpaceInvadersProjectile::AUESpaceInvadersProjectile()
 	InitialLifeSpan = 3.0f;
 }
 
-uint8 AUESpaceInvadersProjectile::GetTeam() const {
-	return TeamType;
+void AUESpaceInvadersProjectile::InitProjectile(const FVector& Direction, uint8 Team) 
+{
+	ProjectileMovement->Velocity = ProjectileMovement->InitialSpeed * Direction;
+	
+	TeamType = Team;
+
+	//bInitialized = true;
 }
 
-void AUESpaceInvadersProjectile::SetTeam(uint8 Team)
-{
-	TeamType = Team;
+uint8 AUESpaceInvadersProjectile::GetTeam() const {
+	return TeamType;
 }
 
 void AUESpaceInvadersProjectile::NotifyActorBeginOverlap(class AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
-	UE_LOG(LogUESpaceInvaders, Warning, TEXT("Begin overlap"));
 
 	//if (!bInitialized)
 	//{
