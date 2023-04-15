@@ -13,7 +13,7 @@ AEnemyAIController::AEnemyAIController()
 	FireSound = FireAudio.Object;
 
 	GunOffset = FVector(-90.f, 0.f, 0.f);
-	FireRate = 2.f;
+	FireRate = 5.f;
 	bCanFire = true;
 }
 

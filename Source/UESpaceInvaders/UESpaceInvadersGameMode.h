@@ -21,7 +21,5 @@ public:
 
 private:
 	void UpdateWorldBounds();
-
-	TArray<class AEnemy*> AllEnemies;
 };
 

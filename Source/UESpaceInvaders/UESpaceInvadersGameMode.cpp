@@ -3,7 +3,7 @@
 #include "UESpaceInvadersGameMode.h"
 #include "UESpaceInvaders.h"
 #include "UESpaceInvadersPawn.h"
-#include "Enemy.h"
+#include "EnemyGrid.h"
 
 AUESpaceInvadersGameMode::AUESpaceInvadersGameMode()
 {
@@ -17,16 +17,8 @@ void AUESpaceInvadersGameMode::StartPlay()
 
 	UpdateWorldBounds();
 
-	UWorld* const World = GetWorld();
-	if (World != nullptr)
-	{
-		for (int x = 0; x < 5; ++x) {
-			for (int y = -5; y <= 5; ++y) {
-				FVector SpawnLocation(x * (100 + 30), y * (100 + 30), 220.f);
-				auto* Enemy = World->SpawnActor<AEnemy>(SpawnLocation, FRotator::ZeroRotator);
-				AllEnemies.Add(Enemy);
-			}
-		}
+	if (UWorld* World = GetWorld()) {
+		World->SpawnActor<AEnemyGrid>(FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 }
 
