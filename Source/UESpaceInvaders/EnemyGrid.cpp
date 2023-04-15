@@ -42,7 +42,6 @@ void AEnemyGrid::BeginPlay()
 	}
 }
 
-// Called every frame
 void AEnemyGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

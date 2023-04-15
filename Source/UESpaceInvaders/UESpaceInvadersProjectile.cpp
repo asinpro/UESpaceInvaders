@@ -70,7 +70,9 @@ void AUESpaceInvadersProjectile::NotifyActorBeginOverlap(class AActor* OtherActo
 	//const AStrategyChar* HitChar = Cast<AStrategyChar>(OtherActor);
 	if (OnEnemyTeam(this, OtherActor))
 	{
-		UE_LOG(LogUESpaceInvaders, Warning, TEXT("Hit enemy"));
+		OtherActor->Destroy();
+		Destroy();
+
 	//	FHitResult PawnHit;
 	//	PawnHit.Actor = MakeWeakObjectPtr(const_cast<AStrategyChar*>(HitChar));
 	//	PawnHit.Component = HitChar->GetCapsuleComponent();
