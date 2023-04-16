@@ -19,7 +19,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	FBox WorldBounds;
 
+	void AddScore(int32 NewScore);
+
 private:
 	void UpdateWorldBounds();
+	void SpawnUFO(class UWorld* World);
+
+	UFUNCTION()
+	void OnUFODestroyed(AActor* DestroyedActor);
+
+	int32 Score = 0;
 };
 

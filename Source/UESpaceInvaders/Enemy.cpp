@@ -37,3 +37,4 @@ uint8 AEnemy::GetTeam() const
 {
 	return ETeam::Enemy;
 }
+

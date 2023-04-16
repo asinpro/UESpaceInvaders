@@ -4,6 +4,7 @@
 #include "UESpaceInvaders.h"
 #include "UESpaceInvadersPawn.h"
 #include "EnemyGrid.h"
+#include "UFO.h"
 
 AUESpaceInvadersGameMode::AUESpaceInvadersGameMode()
 {
@@ -19,7 +20,27 @@ void AUESpaceInvadersGameMode::StartPlay()
 
 	if (UWorld* World = GetWorld()) {
 		World->SpawnActor<AEnemyGrid>(FVector::ZeroVector, FRotator::ZeroRotator);
+		SpawnUFO(World);
 	}
+}
+
+void AUESpaceInvadersGameMode::SpawnUFO(UWorld* World)
+{
+	check(World);
+	AUFO* UFO = World->SpawnActor<AUFO>(FVector::ZeroVector, FRotator::ZeroRotator);
+	UFO->OnDestroyed.AddDynamic(this, &AUESpaceInvadersGameMode::OnUFODestroyed);
+}
+
+void AUESpaceInvadersGameMode::OnUFODestroyed(AActor* DestroyedActor)
+{
+	AddScore(300);
+	SpawnUFO(GetWorld());
+}
+
+void AUESpaceInvadersGameMode::AddScore(int32 NewScore)
+{
+	Score += NewScore;
+	UE_LOG(LogUESpaceInvaders, Warning, TEXT("Added Score = %d		Total Score = %d"), NewScore, Score);
 }
 
 void AUESpaceInvadersGameMode::UpdateWorldBounds()

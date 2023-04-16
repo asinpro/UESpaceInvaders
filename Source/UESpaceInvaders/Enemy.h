@@ -29,4 +29,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
  
 	uint8 GetTeam() const override;
+public:
+	int32 Score;
 };

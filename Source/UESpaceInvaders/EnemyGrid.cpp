@@ -7,7 +7,6 @@
 #include "UESpaceInvaders.h"
 #include <Kismet/GameplayStatics.h>
 
-// Sets default values
 AEnemyGrid::AEnemyGrid()
 {
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -21,7 +20,6 @@ AEnemyGrid::AEnemyGrid()
 	MoveSpeed = 500.0f;
 }
 
-// Called when the game starts or when spawned
 void AEnemyGrid::BeginPlay()
 {
 	Super::BeginPlay();
@@ -38,6 +36,7 @@ void AEnemyGrid::BeginPlay()
 				AEnemy* Enemy = World->SpawnActor<AEnemy>(SpawnLocation, FRotator::ZeroRotator);
 				Enemy->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 				Enemy->OnDestroyed.AddDynamic(this, &AEnemyGrid::OnEnemyDestroyed);
+				Enemy->Score = 10 * (1 + x / 2);
 				AllEnemies.Add(Enemy);
 			}
 		}
@@ -47,6 +46,8 @@ void AEnemyGrid::BeginPlay()
 void AEnemyGrid::OnEnemyDestroyed(AActor* DestroyedActor)
 {
 	AllEnemies.Remove(DestroyedActor);
+	AEnemy* Enemy = Cast<AEnemy>(DestroyedActor);
+	Mode->AddScore(Enemy->Score);
 }
 
 void AEnemyGrid::Tick(float DeltaTime)
