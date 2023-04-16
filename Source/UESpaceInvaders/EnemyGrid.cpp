@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "UESpaceInvadersGameMode.h"
 #include "UESpaceInvaders.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AEnemyGrid::AEnemyGrid()
@@ -36,10 +37,16 @@ void AEnemyGrid::BeginPlay()
 				FVector SpawnLocation(x * (100 + 30), y * (100 + 30), 0.0f);
 				AEnemy* Enemy = World->SpawnActor<AEnemy>(SpawnLocation, FRotator::ZeroRotator);
 				Enemy->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+				Enemy->OnDestroyed.AddDynamic(this, &AEnemyGrid::OnEnemyDestroyed);
 				AllEnemies.Add(Enemy);
 			}
 		}
 	}
+}
+
+void AEnemyGrid::OnEnemyDestroyed(AActor* DestroyedActor)
+{
+	AllEnemies.Remove(DestroyedActor);
 }
 
 void AEnemyGrid::Tick(float DeltaTime)
@@ -48,10 +55,16 @@ void AEnemyGrid::Tick(float DeltaTime)
 
 	AddActorWorldOffset(Direction * MoveSpeed * DeltaTime);
 
-	FBox BoundBox = GetChildBounds(RootComponent);
-	if (BoundBox.Min.Y <= Mode->WorldBounds.Min.Y || BoundBox.Max.Y >= Mode->WorldBounds.Max.Y)
+	FVector Center, BoxExtent;
+	UGameplayStatics::GetActorArrayBounds(AllEnemies, false, Center, BoxExtent);
+	FBox BoundBox = FBox::BuildAABB(Center, BoxExtent);
+
+	UKismetSystemLibrary::DrawDebugBox(this, BoundBox.GetCenter(), BoundBox.GetExtent(), FLinearColor::Red);
+
+	if (IsWorldOut(BoundBox))
 	{
 		FVector Offset = Direction * (Mode->WorldBounds.GetExtent() - BoundBox.GetExtent());
+
 		SetActorLocation(GetActorLocation() * FVector::XAxisVector + Offset);
 		AddActorWorldOffset(FVector::XAxisVector * -30);
 
@@ -59,16 +72,7 @@ void AEnemyGrid::Tick(float DeltaTime)
 	}
 }
 
-FBox AEnemyGrid::GetChildBounds(const USceneComponent* ParentComponent)
-{
-	FBox Box = ParentComponent->Bounds.GetBox();
-	for (USceneComponent* ChildComponent : ParentComponent->GetAttachChildren())
-	{
-		if (ChildComponent)
-		{
-			Box += ChildComponent->Bounds.GetBox();
-		}
-	}
-
-	return Box;
+bool AEnemyGrid::IsWorldOut(const FBox& BoundBox) const {
+	return Direction.Y < 0 && BoundBox.Min.Y <= Mode->WorldBounds.Min.Y
+		|| Direction.Y > 0 && BoundBox.Max.Y >= Mode->WorldBounds.Max.Y;
 }

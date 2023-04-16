@@ -13,6 +13,7 @@ AEnemy::AEnemy()
 	RootComponent = EnemyMeshComponent;
 	EnemyMeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 	EnemyMeshComponent->SetStaticMesh(EnemyMesh.Object);
+	EnemyMeshComponent->AddLocalOffset(FVector::ZAxisVector * -50.0f);
 	
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::Spawned;
