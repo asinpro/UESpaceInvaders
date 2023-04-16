@@ -15,5 +15,10 @@ public class UESpaceInvaders : ModuleRules
 			"InputCore",
 			"AIModule"
 		});
+
+		//PrivateDependencyModuleNames.AddRange(new string[]
+		//{
+		//	"Slate",
+		//})
 	}
 }

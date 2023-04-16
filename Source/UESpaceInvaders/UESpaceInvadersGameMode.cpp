@@ -5,11 +5,15 @@
 #include "UESpaceInvadersPawn.h"
 #include "EnemyGrid.h"
 #include "UFO.h"
+#include "GameHUD.h"
 
 AUESpaceInvadersGameMode::AUESpaceInvadersGameMode()
 {
 	// set default pawn class to our character class
 	DefaultPawnClass = AUESpaceInvadersPawn::StaticClass();
+	HUDClass = AGameHUD::StaticClass();
+
+	PlayerLives = 3;
 }
 
 void AUESpaceInvadersGameMode::StartPlay()
@@ -35,6 +39,16 @@ void AUESpaceInvadersGameMode::OnUFODestroyed(AActor* DestroyedActor)
 {
 	AddScore(300);
 	SpawnUFO(GetWorld());
+}
+
+int32 AUESpaceInvadersGameMode::GetScore() const
+{
+	return Score;
+}
+
+int32 AUESpaceInvadersGameMode::GetPlayerLives() const
+{
+	return PlayerLives;
 }
 
 void AUESpaceInvadersGameMode::AddScore(int32 NewScore)
